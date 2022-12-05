@@ -7,7 +7,7 @@ from typing import Union
 import aiohttp
 
 from sdk_python.efeb.error import UnsuccessfulStudentResponseException, InvalidStudentResponseException
-from sdk_python.efeb.models.student import StudentResponse
+from sdk_python.efeb.models.student.response import StudentResponse
 
 class Session:
     def __init__(self):
