@@ -6,6 +6,8 @@ from base64 import b64decode
 
 from bs4 import BeautifulSoup
 
+from sdk_python.efeb.data import RegisterType
+
 USER_AGENT: str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:107.0) Gecko/20100101 Firefox/107.0"
 
 
@@ -25,6 +27,16 @@ def get_student_headers(text: str) -> dict[str, str]:
         "X-V-RequestVerificationToken": request_verification_token
     }
     return headers
+
+
+def get_student_cookies(student_id: int, register_id: int, register_type: RegisterType, year_id: int) -> dict[str, str]:
+    cookies: dict[str, str] = {
+        "idBiezacyUczen": str(student_id),
+        f'idBiezacyDziennik{"Przedszkole" if register_type is register_type.KINDERGARTEN else ""}{"Wychowankowie" if register_type is register_type.PUPILS else ""}': str(
+            register_id),
+        "biezacyRokSzkolny": str(year_id)
+    }
+    return cookies
 
 
 def get_units_from_permissions(permissions: str):
