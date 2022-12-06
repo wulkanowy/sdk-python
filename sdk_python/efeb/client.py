@@ -22,7 +22,7 @@ class Client:
         uonet_fslogin: UonetFSLogin = UonetFSLogin(self.scheme, self.host)
         sessions, user_data = await uonet_fslogin.log_in(username, password, **kwargs)
         self.sessions = sessions
-        return user_data
+        return sessions, user_data
 
     async def get_students(self) -> list[Student]:
         students: list[Student] = []
