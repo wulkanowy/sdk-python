@@ -18,6 +18,6 @@ class RawMeeting:
         self.subject = data["TematZebrania"]
         self.agenda = data["Agenda"]
         self.present_guardians = data["ObecniNaZebraniu"]
-        self.date = data["DataSpotkania"]
+        self.date = datetime.fromisoformat(data["DataSpotkania"])
         self.online = data["ZebranieOnline"]
         self.id = data["Id"]
