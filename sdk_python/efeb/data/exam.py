@@ -43,11 +43,10 @@ class Exam:
         cookies.update(session_cookies)
         date: datetime = start
         while True:
-            raw_exams_weeks: list[RawExamsWeek] = [RawExamsWeek(data) for data in
-                                                   await session.student_request(scheme, host, units_group, unit_symbol,
-                                                                                 "Sprawdziany.mvc/Get", cookies=cookies,
-                                                                                 data={"data": date.isoformat(),
-                                                                                       "rokSzkolny": year_id})]
+            data: dict = await session.student_request(scheme, host, units_group, unit_symbol, "Sprawdziany.mvc/Get",
+                                                       cookies=cookies,
+                                                       data={"data": date.isoformat(), "rokSzkolny": year_id})
+            raw_exams_weeks: list[RawExamsWeek] = [RawExamsWeek(exam_week) for exam_week in data]
             for raw_exams_week in raw_exams_weeks:
                 for raw_exams_day in raw_exams_week.days:
                     if raw_exams_day.date >= start and raw_exams_day.date <= end:
