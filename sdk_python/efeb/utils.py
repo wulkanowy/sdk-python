@@ -6,7 +6,7 @@ from base64 import b64decode
 
 from bs4 import BeautifulSoup
 
-from sdk_python.efeb.data import RegisterType
+from sdk_python.efeb.data.student import RegisterType
 
 USER_AGENT: str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:107.0) Gecko/20100101 Firefox/107.0"
 
