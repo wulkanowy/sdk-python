@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 
-from sdk_python.efeb.data import RegisterType
+from sdk_python.efeb.data.student import RegisterType
 from sdk_python.efeb.models.student import RawNote, RawNotesAndAchievements
 from sdk_python.efeb.session import Session
 from sdk_python.efeb.utils import get_student_cookies

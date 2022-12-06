@@ -66,8 +66,9 @@ class Client:
                             student.id == raw_register.student_id and
                             student.unit.id == unit.id and student.unit.group == units_group]:
                         raw_school_data: RawSchoolData = RawSchoolData(await self.http_session.student_request(
-                    self.scheme, self.host, units_group, unit.symbol, "SzkolaINauczyciele.mvc/Get", cookies=cookies
-                ))
+                            self.scheme, self.host, units_group, unit.symbol, "SzkolaINauczyciele.mvc/Get",
+                            cookies=cookies
+                        ))
                         raw_student_personal_data: RawStudentPersonalData = RawStudentPersonalData(
                             await self.http_session.student_request(
                                 self.scheme, self.host, units_group, unit.symbol, "Uczen.mvc/Get", cookies=cookies

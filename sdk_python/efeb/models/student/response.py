@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+
 @dataclass
 class StudentResponse:
     success: bool
