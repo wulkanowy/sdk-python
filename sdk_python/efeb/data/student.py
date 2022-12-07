@@ -4,9 +4,18 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 
-from sdk_python.efeb.models.start import Permissions, PermissionsAuthInfo, PermissionsUnit
-from sdk_python.efeb.models.student import RawRegister, RawPeriod, RawStudentPersonalData, RawSchoolData, \
-    RawStudentCache
+from sdk_python.efeb.models.start import (
+    Permissions,
+    PermissionsAuthInfo,
+    PermissionsUnit,
+)
+from sdk_python.efeb.models.student import (
+    RawRegister,
+    RawPeriod,
+    RawStudentPersonalData,
+    RawSchoolData,
+    RawStudentCache,
+)
 
 
 class RegisterType(Enum):
@@ -48,7 +57,11 @@ class Pupil:
     sex: Sex
     adult: bool
 
-    def __init__(self, raw_register: RawRegister, raw_student_personal_data: RawStudentPersonalData):
+    def __init__(
+        self,
+        raw_register: RawRegister,
+        raw_student_personal_data: RawStudentPersonalData,
+    ):
         self.first_name = raw_student_personal_data.first_name
         self.second_name = raw_student_personal_data.second_name
         self.last_name = raw_student_personal_data.last_name
@@ -68,8 +81,16 @@ class Unit:
     pedagogues: list[str]
     group: str
 
-    def __init__(self, permissions: Permissions, raw_school_data: RawSchoolData, unit_id: int, group: str):
-        unit: PermissionsUnit = [unit for unit in permissions.units if unit.id == unit_id][0]
+    def __init__(
+        self,
+        permissions: Permissions,
+        raw_school_data: RawSchoolData,
+        unit_id: int,
+        group: str,
+    ):
+        unit: PermissionsUnit = [
+            unit for unit in permissions.units if unit.id == unit_id
+        ][0]
         self.id = unit.id
         self.short = unit.short
         self.symbol = unit.symbol
@@ -169,10 +190,19 @@ class Login:
     name: str = None
     last_name: str = None
 
-    def __init__(self, raw_register: RawRegister, full_name: str, unit_id: int, permissions: Permissions,
-                 raw_student_personal_data: RawStudentPersonalData):
-        auth_info: PermissionsAuthInfo = \
-            [auth_info for auth_info in permissions.auth_infos if auth_info.unit_id == unit_id][0]
+    def __init__(
+        self,
+        raw_register: RawRegister,
+        full_name: str,
+        unit_id: int,
+        permissions: Permissions,
+        raw_student_personal_data: RawStudentPersonalData,
+    ):
+        auth_info: PermissionsAuthInfo = [
+            auth_info
+            for auth_info in permissions.auth_infos
+            if auth_info.unit_id == unit_id
+        ][0]
         self.id = auth_info.login_id
         self.value = auth_info.login_value
         self.full_name = full_name
@@ -203,14 +233,30 @@ class Student:
     request_verification_token: str
     session_cookies: dict[str, str]
 
-    def __init__(self, raw_register: RawRegister, permissions: Permissions, unit_id: int, unit_group: str,
-                 raw_student_personal_data: RawStudentPersonalData, login_full_name: str,
-                 raw_student_cache: RawStudentCache,
-                 raw_school_data: RawSchoolData, app_guid: str, app_version: str, request_verification_token: str,
-                 session_cookies: dict[str, str]):
+    def __init__(
+        self,
+        raw_register: RawRegister,
+        permissions: Permissions,
+        unit_id: int,
+        unit_group: str,
+        raw_student_personal_data: RawStudentPersonalData,
+        login_full_name: str,
+        raw_student_cache: RawStudentCache,
+        raw_school_data: RawSchoolData,
+        app_guid: str,
+        app_version: str,
+        request_verification_token: str,
+        session_cookies: dict[str, str],
+    ):
         self.id = raw_register.student_id
         self.registers = [Register(raw_register, raw_student_cache)]
-        self.login = Login(raw_register, login_full_name, unit_id, permissions, raw_student_personal_data)
+        self.login = Login(
+            raw_register,
+            login_full_name,
+            unit_id,
+            permissions,
+            raw_student_personal_data,
+        )
         self.pupil = Pupil(raw_register, raw_student_personal_data)
         self.unit = Unit(permissions, raw_school_data, unit_id, unit_group)
         self.constituent_unit_id = raw_register.constituent_unit_id

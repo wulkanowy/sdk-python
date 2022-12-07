@@ -53,4 +53,6 @@ class Permissions:
 
     def __init__(self, data: dict):
         self.units = [PermissionsUnit(unit_data) for unit_data in data["Units"]]
-        self.auth_infos = [PermissionsAuthInfo(auth_info) for auth_info in data["AuthInfos"]]
+        self.auth_infos = [
+            PermissionsAuthInfo(auth_info) for auth_info in data["AuthInfos"]
+        ]

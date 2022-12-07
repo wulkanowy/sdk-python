@@ -39,5 +39,7 @@ class RawSchoolData:
 
     def __init__(self, data: dict):
         self.school = RawSchool(data["Szkola"])
-        self.subjects = [RawSubject(subject_data) for subject_data in data["Nauczyciele"]]
+        self.subjects = [
+            RawSubject(subject_data) for subject_data in data["Nauczyciele"]
+        ]
         self.team_name = data["Klasa"]

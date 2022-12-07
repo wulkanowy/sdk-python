@@ -44,4 +44,6 @@ class RawExamsWeek:
     days: list[RawExamsDay]
 
     def __init__(self, data: dict):
-        self.days = [RawExamsDay(day_data) for day_data in data["SprawdzianyGroupedByDayList"]]
+        self.days = [
+            RawExamsDay(day_data) for day_data in data["SprawdzianyGroupedByDayList"]
+        ]

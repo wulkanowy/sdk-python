@@ -41,13 +41,30 @@ class Note:
         self.date = raw_note.date
 
     @staticmethod
-    async def get(scheme: str, host: str, units_group: str, unit_symbol: str, student_id: int, register_id: int,
-                  register_type: RegisterType, year_id: int, session_cookies: dict[str, str]) -> list["Note"]:
+    async def get(
+        scheme: str,
+        host: str,
+        units_group: str,
+        unit_symbol: str,
+        student_id: int,
+        register_id: int,
+        register_type: RegisterType,
+        year_id: int,
+        session_cookies: dict[str, str],
+    ) -> list["Note"]:
         session: Session = Session()
-        cookies: dict[str, str] = get_student_cookies(student_id, register_id, register_type, year_id)
+        cookies: dict[str, str] = get_student_cookies(
+            student_id, register_id, register_type, year_id
+        )
         cookies.update(session_cookies)
-        data: dict = await session.student_request(scheme, host, units_group, unit_symbol, "UwagiIOsiagniecia.mvc/Get",
-                                                   cookies=cookies)
+        data: dict = await session.student_request(
+            scheme,
+            host,
+            units_group,
+            unit_symbol,
+            "UwagiIOsiagniecia.mvc/Get",
+            cookies=cookies,
+        )
         raw_notes_and_achievements: RawNotesAndAchievements(data)
         notes: list["Note"] = [Note(raw_note) for raw_note in data.notes]
         return notes
@@ -58,13 +75,33 @@ class Achievement:
     content: str
 
     @staticmethod
-    async def get(scheme: str, host: str, units_group: str, unit_symbol: str, student_id: int, register_id: int,
-                  register_type: RegisterType, year_id: int, session_cookies: dict[str, str]) -> list["Achievements"]:
+    async def get(
+        scheme: str,
+        host: str,
+        units_group: str,
+        unit_symbol: str,
+        student_id: int,
+        register_id: int,
+        register_type: RegisterType,
+        year_id: int,
+        session_cookies: dict[str, str],
+    ) -> list["Achievements"]:
         session: Session = Session()
-        cookies: dict[str, str] = get_student_cookies(student_id, register_id, register_type, year_id)
+        cookies: dict[str, str] = get_student_cookies(
+            student_id, register_id, register_type, year_id
+        )
         cookies.update(session_cookies)
         data: RawNotesAndAchievements = RawNotesAndAchievements(
-            await session.student_request(scheme, host, units_group, unit_symbol, "UwagiIOsiagniecia.mvc/Get",
-                                          cookies=cookies))
-        achievements: list["Achievement"] = [Achievement(achievement) for achievement in data.achievements]
+            await session.student_request(
+                scheme,
+                host,
+                units_group,
+                unit_symbol,
+                "UwagiIOsiagniecia.mvc/Get",
+                cookies=cookies,
+            )
+        )
+        achievements: list["Achievement"] = [
+            Achievement(achievement) for achievement in data.achievements
+        ]
         return achievements

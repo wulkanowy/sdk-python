@@ -78,8 +78,12 @@ class RawStudentPersonalData:
         self.cell_phone = data["TelKomorkowy"]
         self.email_address = data["Email"]
         self.show_pesel = data["CzyWidocznyPesel"]
-        self.guardian_1 = RawGuardianPersonalData(data["Opiekun1"]) if data["Opiekun1"] else None
-        self.guardian_2 = RawGuardianPersonalData(data["Opiekun2"]) if data["Opiekun2"] else None
+        self.guardian_1 = (
+            RawGuardianPersonalData(data["Opiekun1"]) if data["Opiekun1"] else None
+        )
+        self.guardian_2 = (
+            RawGuardianPersonalData(data["Opiekun2"]) if data["Opiekun2"] else None
+        )
         self.full_name = data["ImieNazwisko"]
         self.has_pesel = data["PosiadaPesel"]
         self.pole = data["Polak"]

@@ -34,19 +34,39 @@ class Exam:
         self.entry_date = raw_exam.entry_date
 
     @staticmethod
-    async def get(scheme: str, host: str, units_group: str, unit_symbol: str, student_id: int, register_id: int,
-                  register_type: RegisterType, year_id: int, session_cookies: dict[str, str], start: datetime,
-                  end: datetime) -> list["Exam"]:
+    async def get(
+        scheme: str,
+        host: str,
+        units_group: str,
+        unit_symbol: str,
+        student_id: int,
+        register_id: int,
+        register_type: RegisterType,
+        year_id: int,
+        session_cookies: dict[str, str],
+        start: datetime,
+        end: datetime,
+    ) -> list["Exam"]:
         exams: list[Exam] = []
         session: Session = Session()
-        cookies: dict[str, str] = get_student_cookies(student_id, register_id, register_type, year_id)
+        cookies: dict[str, str] = get_student_cookies(
+            student_id, register_id, register_type, year_id
+        )
         cookies.update(session_cookies)
         date: datetime = start
         while True:
-            data: dict = await session.student_request(scheme, host, units_group, unit_symbol, "Sprawdziany.mvc/Get",
-                                                       cookies=cookies,
-                                                       data={"data": date.isoformat(), "rokSzkolny": year_id})
-            raw_exams_weeks: list[RawExamsWeek] = [RawExamsWeek(exam_week) for exam_week in data]
+            data: dict = await session.student_request(
+                scheme,
+                host,
+                units_group,
+                unit_symbol,
+                "Sprawdziany.mvc/Get",
+                cookies=cookies,
+                data={"data": date.isoformat(), "rokSzkolny": year_id},
+            )
+            raw_exams_weeks: list[RawExamsWeek] = [
+                RawExamsWeek(exam_week) for exam_week in data
+            ]
             for raw_exams_week in raw_exams_weeks:
                 for raw_exams_day in raw_exams_week.days:
                     if raw_exams_day.date >= start and raw_exams_day.date <= end:

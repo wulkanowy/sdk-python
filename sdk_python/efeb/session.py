@@ -6,7 +6,10 @@ from typing import Union
 
 import aiohttp
 
-from sdk_python.efeb.error import UnsuccessfulStudentResponseException, InvalidStudentResponseException
+from sdk_python.efeb.error import (
+    UnsuccessfulStudentResponseException,
+    InvalidStudentResponseException,
+)
 from sdk_python.efeb.models.student.response import StudentResponse
 
 
@@ -23,12 +26,24 @@ class Session:
             content: str = await response.text()
         return content
 
-    async def student_request(self, scheme: str, host: str, units_group: str, unit_symbol: str, endpoint: str,
-                              method: str = "POST", **kwargs) -> Union[str, dict, list, bool]:
-        url: str = f"{scheme}://uonetplus-uczen.{host}/{units_group}/{unit_symbol}/{endpoint}"
+    async def student_request(
+        self,
+        scheme: str,
+        host: str,
+        units_group: str,
+        unit_symbol: str,
+        endpoint: str,
+        method: str = "POST",
+        **kwargs,
+    ) -> Union[str, dict, list, bool]:
+        url: str = (
+            f"{scheme}://uonetplus-uczen.{host}/{units_group}/{unit_symbol}/{endpoint}"
+        )
         response_content: str = await self.request(url, method, **kwargs)
         try:
-            response_json: StudentResponse = StudentResponse(json.loads(response_content))
+            response_json: StudentResponse = StudentResponse(
+                json.loads(response_content)
+            )
         except:
             raise InvalidStudentResponseException
         if not response_json.success:

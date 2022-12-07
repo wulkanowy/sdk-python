@@ -29,13 +29,27 @@ class Meeting:
         self.present_guardians = raw_meeting.present_guardians
 
     @staticmethod
-    async def get(scheme: str, host: str, units_group: str, unit_symbol: str, student_id: int, register_id: int,
-                  register_type: RegisterType, year_id: int, session_cookies: dict[str, str]) -> list["Meeting"]:
+    async def get(
+        scheme: str,
+        host: str,
+        units_group: str,
+        unit_symbol: str,
+        student_id: int,
+        register_id: int,
+        register_type: RegisterType,
+        year_id: int,
+        session_cookies: dict[str, str],
+    ) -> list["Meeting"]:
         session: Session = Session()
-        cookies: dict[str, str] = get_student_cookies(student_id, register_id, register_type, year_id)
+        cookies: dict[str, str] = get_student_cookies(
+            student_id, register_id, register_type, year_id
+        )
         cookies.update(session_cookies)
-        data: dict = await session.student_request(scheme, host, units_group, unit_symbol,
-                                                   "Zebrania.mvc/Get", cookies=cookies)
+        data: dict = await session.student_request(
+            scheme, host, units_group, unit_symbol, "Zebrania.mvc/Get", cookies=cookies
+        )
         raw_meetings: list[RawMeeting] = [RawMeeting(meeting) for meeting in data]
-        meetings: list["Meeting"] = [Meeting(raw_meeting) for raw_meeting in raw_meetings]
+        meetings: list["Meeting"] = [
+            Meeting(raw_meeting) for raw_meeting in raw_meetings
+        ]
         return meetings
