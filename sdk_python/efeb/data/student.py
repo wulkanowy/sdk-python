@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 
+from sdk_python.efeb.data.employee import Employee
 from sdk_python.efeb.models.start import (
     Permissions,
     PermissionsAuthInfo,
@@ -77,8 +78,8 @@ class Unit:
     name: str
     address: str
     contact: str
-    headmasters: list[str]
-    pedagogues: list[str]
+    headmasters: list[Employee]
+    pedagogues: list[Employee]
     group: str
 
     def __init__(
@@ -97,8 +98,8 @@ class Unit:
         self.name = unit.name
         self.address = raw_school_data.school.address
         self.contact = raw_school_data.school.contact
-        self.headmasters = raw_school_data.school.headmaster.split(", ")
-        self.pedagogues = raw_school_data.school.pedagogue.split(", ")
+        self.headmasters = [Employee(headmaster) for headmaster in raw_school_data.school.headmaster.split(", ")]
+        self.pedagogues = [Employee(pedagogue) for pedagogue in raw_school_data.school.pedagogue.split(", ")]
         self.group = group
 
 

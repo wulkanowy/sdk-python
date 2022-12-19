@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
 
+from sdk_python.efeb.data.employee import Employee
 from sdk_python.efeb.data.student import RegisterType
 from sdk_python.efeb.models.student import RawExam, RawExamsDay, RawExamsWeek
 from sdk_python.efeb.session import Session
@@ -20,7 +21,7 @@ class Exam:
     type: ExamType
     subject: str
     description: str
-    teacher: str
+    teacher: Employee
     date: datetime
     entry_date: datetime
 
@@ -29,7 +30,7 @@ class Exam:
         self.type = ExamType(raw_exam.type)
         self.subject = raw_exam.subject
         self.description = raw_exam.description
-        self.teacher = raw_exam.teacher
+        self.teacher = Employee(raw_exam.teacher)
         self.date = raw_exams_day.date
         self.entry_date = raw_exam.entry_date
 
