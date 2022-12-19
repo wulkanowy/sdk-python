@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 
+from sdk_python.efeb.data.employee import Employee
 from sdk_python.efeb.data.student import RegisterType
 from sdk_python.efeb.models.student import RawNote, RawNotesAndAchievements
 from sdk_python.efeb.session import Session
@@ -28,14 +29,14 @@ class NoteCategory:
 @dataclass
 class Note:
     content: str
-    teacher: str
+    teacher: Employee
     points: str
     category: NoteCategory
     date: datetime
 
     def __init__(self, raw_note: RawNote):
         self.content = raw_note.content
-        self.teacher = raw_note.teacher
+        self.teacher = Employee(raw_note.teacher)
         self.points = raw_note.points
         self.category = NoteCategory(raw_note)
         self.date = raw_note.date
@@ -65,8 +66,8 @@ class Note:
             "UwagiIOsiagniecia.mvc/Get",
             cookies=cookies,
         )
-        raw_notes_and_achievements: RawNotesAndAchievements(data)
-        notes: list["Note"] = [Note(raw_note) for raw_note in data.notes]
+        raw_notes_and_achievements: RawNotesAndAchievements = RawNotesAndAchievements(data)
+        notes: list["Note"] = [Note(raw_note) for raw_note in raw_notes_and_achievements.notes]
         return notes
 
 
