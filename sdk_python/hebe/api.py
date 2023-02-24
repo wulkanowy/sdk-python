@@ -20,7 +20,7 @@ from sdk_python.hebe.error import (
 class API:
     def __init__(self, certificate):
         self._session = ClientSession()
-        self._certificate = certificate
+        self.certificate = certificate
 
     async def request(self, method: str, url: str, envelope: Any = None, **kwargs):
         payload: RequestPayload = (
@@ -28,15 +28,15 @@ class API:
             if method == "POST" and envelope != None
             else None
         )
-        headers: RequestHeaders = RequestHeaders.get(self._certificate, url, payload).dict(
-            by_alias=True
-        )
+        headers: RequestHeaders = RequestHeaders.get(
+            self.certificate, url, payload
+        ).dict(by_alias=True)
         try:
             response = await self._session.request(
                 method, url, data=payload, headers=headers, **kwargs
             )
         except:
-            raise FailedRequestException
+            raise FailedRequestException()
         if response.headers["Content-Type"] != "application/json; charset=utf-8":
             raise InvalidResponseContentTypeException
         response: Response = Response.parse_raw(await response.text())

@@ -57,8 +57,8 @@ class RequestHeaders(BaseModel):
             date=now.strftime("%a, %d %b %Y %H:%M:%S GMT"),
             canonical_url=canonical_url,
             signature=signature,
-            digest=digest,
-            content_type="application/json" if digest else None,
+            digest=digest if digest else "",
+            content_type="application/json" if digest else "",
         )
 
     class Config:
