@@ -30,6 +30,7 @@ class FilterListType(Enum):
 class GETParams(BaseModel):
     mode: Optional[int] = Field(alias="mode")
     pupil_id: Optional[int] = Field(alias="pupilId")
+    period_id: Optional[int] = Field(alias="periodId")
     constituent_unit_id: Optional[int] = Field(alias="constituentId")
     day: Optional[date] = Field(alias="day")
     last_sync_date: Optional[datetime] = Field(alias="lastSyncDate")

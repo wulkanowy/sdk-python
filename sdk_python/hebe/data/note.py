@@ -1,3 +1,4 @@
+from uuid import UUID
 from pydantic import BaseModel, Field, root_validator
 from datetime import datetime
 from typing import Optional
@@ -7,6 +8,7 @@ from sdk_python.hebe.api import API, FilterListType
 from sdk_python.hebe.data.pupil import Pupil
 from sdk_python.hebe.error import InvalidResponseEnvelopeTypeException
 from sdk_python.hebe.models.employee import Employee
+
 
 class NoteCategoryType(Enum):
     NEGATIVE = "negatywna"
@@ -22,7 +24,7 @@ class NoteCategory(BaseModel):
 
 class Note(BaseModel):
     id: int = Field(alias="Id")
-    key: str = Field(alias="Key")
+    key: UUID = Field(alias="Key")
     points: Optional[float] = Field(alias="Points")
     positive: bool = Field(alias="Positive")
     content: str = Field(alias="Content")
@@ -33,10 +35,13 @@ class Note(BaseModel):
 
     @root_validator(pre=True)
     def root_validator(cls, values):
+        values["Key"] = UUID(values["Key"])
         values["DateValid"] = datetime.fromtimestamp(
-            values["DateValid"]["Timestamp"] / 1000)
+            values["DateValid"]["Timestamp"] / 1000
+        )
         values["DateModify"] = datetime.fromtimestamp(
-            values["DateModify"]["Timestamp"] / 1000)
+            values["DateModify"]["Timestamp"] / 1000
+        )
         return values
 
     @staticmethod
