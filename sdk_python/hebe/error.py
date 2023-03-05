@@ -6,6 +6,10 @@ class InvalidResponseContentTypeException(BaseException):
     pass
 
 
+class InvalidResponseContentException(BaseException):
+    pass
+
+
 class FailedRequestException(BaseException):
     pass
 

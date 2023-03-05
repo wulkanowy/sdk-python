@@ -1,9 +1,15 @@
-from typing import Any
+from typing import Any, Optional, Union
+from datetime import datetime, date
 from aiohttp import ClientSession
+from enum import Enum
+from pydantic import BaseModel, Field
+import json
+
 from sdk_python.hebe.models.request import RequestHeaders, RequestPayload
 from sdk_python.hebe.models.response import Response
 from sdk_python.hebe.error import (
     InvalidResponseContentTypeException,
+    InvalidResponseContentException,
     FailedRequestException,
     InvalidSignatureValuesException,
     InvalidRequestEnvelopeStructure,
@@ -17,12 +23,35 @@ from sdk_python.hebe.error import (
 )
 
 
+class FilterListType(Enum):
+    BY_PUPIL = "byPupil"
+
+
+class GETParams(BaseModel):
+    mode: Optional[int] = Field(alias="mode")
+    pupil_id: Optional[int] = Field(alias="pupilId")
+    constituent_unit_id: Optional[int] = Field(alias="constituentId")
+    day: Optional[date] = Field(alias="day")
+    last_sync_date: Optional[datetime] = Field(alias="lastSyncDate")
+    last_item_id: Optional[int] = Field(alias="lastId")
+    page_size: Optional[int] = Field(alias="pageSize")
+
+    class Config:
+        allow_population_by_field_name = True
+        json_encoders = {
+            date: lambda date: date.isoformat(),
+            datetime: lambda datetime: datetime.isoformat(),
+        }
+
+
 class API:
     def __init__(self, certificate):
         self._session = ClientSession()
         self.certificate = certificate
 
-    async def request(self, method: str, url: str, envelope: Any = None, **kwargs):
+    async def request(
+        self, method: str, url: str, envelope: Any = None, **kwargs
+    ) -> tuple[Any, str]:
         payload: RequestPayload = (
             RequestPayload.get(envelope).json(by_alias=True)
             if method == "POST" and envelope != None
@@ -31,17 +60,40 @@ class API:
         headers: RequestHeaders = RequestHeaders.get(
             self.certificate, url, payload
         ).dict(by_alias=True)
-        try:
-            response = await self._session.request(
-                method, url, data=payload, headers=headers, **kwargs
-            )
-        except:
-            raise FailedRequestException()
+        if method == "GET":
+            try:
+                response = await self._session.get(url, headers=headers, **kwargs)
+            except:
+                raise FailedRequestException()
+        else:
+            try:
+                response = await self._session.request(
+                    method, url, data=payload, headers=headers, **kwargs
+                )
+            except:
+                raise FailedRequestException()
         if response.headers["Content-Type"] != "application/json; charset=utf-8":
             raise InvalidResponseContentTypeException
-        response: Response = Response.parse_raw(await response.text())
+        try:
+            response: Response = Response.parse_raw(await response.text())
+        except:
+            raise InvalidResponseContentException
         self._check_response_status(response.status.code, response.status.message)
         return response.envelope, response.envelope_type
+
+    async def get(
+        self,
+        entity: str,
+        rest_url: str,
+        filter_list_type: FilterListType = None,
+        **kwargs,
+    ) -> tuple[Any, str]:
+        url: str = f"{rest_url}/mobile/{entity}/{filter_list_type.value if filter_list_type else ''}"
+        params: dict[str, Union[int, str]] = json.loads(
+            GETParams(**kwargs).json(by_alias=True, exclude_none=True)
+        )
+        envelope, envelope_type = await self.request("GET", url, params=params)
+        return envelope, envelope_type
 
     def _check_response_status(self, status_code: int, status_message: str):
         if status_code != 0:
@@ -63,3 +115,6 @@ class API:
                 raise ExpiredTokenException()
             else:
                 raise SDKException(f"[{status_code}] {status_message}")
+
+    async def __aexit__(self):
+        await self.session.close()

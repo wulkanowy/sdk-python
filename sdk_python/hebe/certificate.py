@@ -54,4 +54,4 @@ class Certificate(BaseModel):
         )
         if response_envelope_type != "AccountPayload":
             raise InvalidResponseEnvelopeTypeException()
-        self.rest_url = response_envelope["RestURL"]
+        self.rest_url = f'{response_envelope["RestURL"]}/api'
