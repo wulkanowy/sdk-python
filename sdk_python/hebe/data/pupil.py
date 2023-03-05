@@ -125,10 +125,10 @@ class Pupil(BaseModel):
 
     @staticmethod
     async def get(api: API) -> list["Pupil"]:
-        envelope, envelope_type = await api.request(
-            "GET",
-            f"{api.certificate.rest_url}/api/mobile/register/hebe",
-            params={"mode": 2},
+        envelope, envelope_type = await api.get(
+            entity="register/hebe",
+            rest_url=api.certificate.rest_url,
+            mode=2,
         )
         if envelope_type != "IEnumerable`1":
             raise InvalidResponseEnvelopeTypeException()
