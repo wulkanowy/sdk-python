@@ -12,3 +12,4 @@ class Subject(BaseModel):
     @root_validator(pre=True)
     def root_validator(cls, values):
         values["Key"] = UUID(values["Key"])
+        return values

@@ -8,6 +8,7 @@ from sdk_python.hebe.api import API, FilterListType
 from sdk_python.hebe.data.pupil import Period, Pupil
 from sdk_python.hebe.error import InvalidResponseEnvelopeTypeException
 from sdk_python.hebe.models.employee import Employee
+from sdk_python.hebe.models.subject import Subject
 
 
 class GradeColumnColor(Enum):
@@ -30,6 +31,7 @@ class GradeColumn(BaseModel):
     number: int = Field(alias="Number")
     short: str = Field(alias="Code")
     group_name: Optional[str] = Field(alias="Group")
+    subject: Subject = Field(alias="Subject")
     name: str = Field(alias="Name")
     color: GradeColumnColor = Field(alias="Color")
     weight: Optional[float] = Field(alias="Weight")
@@ -38,7 +40,6 @@ class GradeColumn(BaseModel):
 
     @root_validator(pre=True)
     def root_validator(cls, values):
-        print(values)
         values["Key"] = UUID(values["Key"])
         return values
 
@@ -85,3 +86,40 @@ class Grade(BaseModel):
         if envelope_type != "IEnumerable`1":
             raise InvalidResponseEnvelopeTypeException()
         return [Grade.parse_obj(grade) for grade in envelope]
+
+
+class GradesSummary(BaseModel):
+    id: int = Field(alias="Id")
+    subject: Subject = Field(alias="Subject")
+    proposed_grade: Optional[str] = Field(alias="Entry_1")
+    final_grade: Optional[str] = Field(alias="Entry_2")
+    total_points: Optional[str] = Field(alias="Entry_3")
+    date_modify: Optional[datetime] = Field(alias="DateModify")
+    period_id: int = Field(alias="PeriodId")
+    pupil_id: int = Field(alias="PupilId")
+
+    @root_validator(pre=True)
+    def root_validator(cls, values):
+        try:
+            values["DateModify"] = datetime.fromtimestamp(
+                values["DateModify"]["Timestamp"] / 1000
+            )
+        except:
+            values["DateModify"] = None
+        return values
+
+    @staticmethod
+    async def get_by_pupil(
+        api: API, pupil: Pupil, period: Period, **kwargs
+    ) -> list["GradesSummary"]:
+        envelope, envelope_type = await api.get(
+            entity="grade/summary",
+            rest_url=pupil.unit.rest_url,
+            filter_list_type=FilterListType.BY_PUPIL,
+            pupil_id=pupil.id,
+            period_id=period.id,
+            **kwargs
+        )
+        if envelope_type != "IEnumerable`1":
+            raise InvalidResponseEnvelopeTypeException()
+        return [GradesSummary.parse_obj(grades_summary) for grades_summary in envelope]
