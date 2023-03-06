@@ -29,7 +29,7 @@ class GradeColumn(BaseModel):
     id: int = Field(alias="Id")
     key: UUID = Field(alias="Key")
     number: int = Field(alias="Number")
-    short: str = Field(alias="Code")
+    short: Optional[str] = Field(alias="Code")
     group_name: Optional[str] = Field(alias="Group")
     subject: Subject = Field(alias="Subject")
     name: str = Field(alias="Name")
@@ -49,10 +49,10 @@ class Grade(BaseModel):
     key: UUID = Field(alias="Key")
     content: str = Field(alias="Content")
     content_raw: str = Field(alias="ContentRaw")
-    comment: str = Field(alias="Comment")
+    comment: Optional[str] = Field(alias="Comment")
     value: Optional[float] = Field(alias="Value")
     column: GradeColumn = Field(alias="Column")
-    date_created: datetime = Field(alias="DateCreated")
+    date_created: Optional[datetime] = Field(alias="DateCreated")
     creator: Employee = Field(alias="Creator")
     date_modify: datetime = Field(alias="DateModify")
     modifier: Employee = Field(alias="Modifier")
@@ -73,10 +73,10 @@ class Grade(BaseModel):
 
     @staticmethod
     async def get_by_pupil(
-        api: API, pupil: Pupil, period: Period, **kwargs
+        api: API, pupil: Pupil, period: Period, behaviour: bool = False, **kwargs
     ) -> list["Grade"]:
         envelope, envelope_type = await api.get(
-            entity="grade",
+            entity=f'grade{"/behaviour" if behaviour else ""}',
             rest_url=pupil.unit.rest_url,
             filter_list_type=FilterListType.BY_PUPIL,
             pupil_id=pupil.id,
