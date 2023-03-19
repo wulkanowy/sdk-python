@@ -36,6 +36,7 @@ class GETParams(BaseModel):
     last_sync_date: Optional[datetime] = Field(alias="lastSyncDate")
     last_item_id: Optional[int] = Field(alias="lastId")
     page_size: Optional[int] = Field(alias="pageSize")
+    from_: Optional[date] = Field(alias="from")
 
     class Config:
         allow_population_by_field_name = True
