@@ -14,6 +14,7 @@ class Meeting(BaseModel):
     place: str = Field(alias="Where")
     agenda: str = Field(alias="Agenda")
     online: Optional[str] = Field(alias="Online")
+    additional_info: Optional[str] = Field(alias="AdditionalInfo")
 
     @root_validator(pre=True)
     def root_validator(cls, values):
@@ -22,15 +23,14 @@ class Meeting(BaseModel):
 
     @staticmethod
     async def get_by_pupil(
-        api: API, pupil: Pupil, period: Period, **kwargs
+        api: API, pupil: Pupil, from_: date = None, **kwargs
     ) -> list["Meeting"]:
         envelope, envelope_type = await api.get(
             entity="meetings",
             filter_list_type=FilterListType.BY_PUPIL,
             rest_url=pupil.unit.rest_url,
             pupil_id=pupil.id,
-            period_id=period.id,
-            from_=period.start,
+            from_=from_ if from_ else pupil.periods[0].start.date(),
             **kwargs
         )
         if envelope_type != "IEnumerable`1":
