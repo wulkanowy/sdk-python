@@ -10,6 +10,7 @@ from sdk_python.hebe.models.response import Response
 from sdk_python.hebe.error import (
     InvalidResponseContentTypeException,
     InvalidResponseContentException,
+    NotFoundEndpointException,
     FailedRequestException,
     InvalidSignatureValuesException,
     InvalidRequestEnvelopeStructure,
@@ -74,12 +75,14 @@ class API:
                 )
             except:
                 raise FailedRequestException()
+        if response.status == 404:
+            raise NotFoundEndpointException()
         if response.headers["Content-Type"] != "application/json; charset=utf-8":
             raise InvalidResponseContentTypeException
         try:
             response: Response = Response.parse_raw(await response.text())
         except:
-            raise InvalidResponseContentException
+            raise InvalidResponseContentException()
         self._check_response_status(response.status.code, response.status.message)
         return response.envelope, response.envelope_type
 
@@ -87,10 +90,11 @@ class API:
         self,
         entity: str,
         rest_url: str,
+        deleted: bool = False,
         filter_list_type: FilterListType = None,
         **kwargs,
     ) -> tuple[Any, str]:
-        url: str = f"{rest_url}/mobile/{entity}/{filter_list_type.value if filter_list_type else ''}"
+        url: str = f"{rest_url}/mobile/{entity}{'/deleted' if deleted else ''}{f'/{filter_list_type.value}' if filter_list_type else ''}"
         params: dict[str, Union[int, str]] = json.loads(
             GETParams(**kwargs).json(by_alias=True, exclude_none=True)
         )

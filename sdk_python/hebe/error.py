@@ -2,49 +2,53 @@ class SDKException(Exception):
     pass
 
 
-class InvalidResponseContentTypeException(BaseException):
+class InvalidResponseContentTypeException(SDKException):
     pass
 
 
-class InvalidResponseContentException(BaseException):
+class InvalidResponseContentException(SDKException):
     pass
 
 
-class FailedRequestException(BaseException):
+class NotFoundEndpointException(SDKException):
     pass
 
 
-class InvalidResponseEnvelopeTypeException(BaseException):
+class FailedRequestException(SDKException):
     pass
 
 
-class InvalidSignatureValuesException(BaseException):
+class InvalidResponseEnvelopeTypeException(SDKException):
     pass
 
 
-class InvalidRequestEnvelopeStructure(BaseException):
+class InvalidSignatureValuesException(SDKException):
     pass
 
 
-class InvalidRequestHeadersStructure(BaseException):
+class InvalidRequestEnvelopeStructure(SDKException):
     pass
 
 
-class UnauthorizedCertificateException(BaseException):
+class InvalidRequestHeadersStructure(SDKException):
     pass
 
 
-class InvalidTokenException(BaseException):
+class UnauthorizedCertificateException(SDKException):
     pass
 
 
-class UsedTokenException(BaseException):
+class InvalidTokenException(SDKException):
     pass
 
 
-class InvalidPINException(BaseException):
+class UsedTokenException(SDKException):
     pass
 
 
-class ExpiredTokenException(BaseException):
+class InvalidPINException(SDKException):
+    pass
+
+
+class ExpiredTokenException(SDKException):
     pass
