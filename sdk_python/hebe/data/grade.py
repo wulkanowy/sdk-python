@@ -87,6 +87,23 @@ class Grade(BaseModel):
             raise InvalidResponseEnvelopeTypeException()
         return [Grade.parse_obj(grade) for grade in envelope]
 
+    @staticmethod
+    async def get_by_id(
+        api: API, pupil: Pupil, period: Period, id: int, **kwargs
+    ) -> "Grade":
+        envelope, envelope_type = await api.get(
+            entity="grade",
+            rest_url=pupil.unit.rest_url,
+            filter_list_type=FilterListType.BY_ID,
+            pupil_id=pupil.id,
+            period_id=period.id,
+            id=id,
+            **kwargs
+        )
+        if envelope_type != "GradePayload":
+            raise InvalidResponseEnvelopeTypeException()
+        return Grade.parse_obj(envelope)
+
 
 class GradesSummary(BaseModel):
     id: int = Field(alias="Id")

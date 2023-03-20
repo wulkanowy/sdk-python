@@ -56,3 +56,17 @@ class Note(BaseModel):
         if envelope_type != "IEnumerable`1":
             raise InvalidResponseEnvelopeTypeException()
         return [Note.parse_obj(note) for note in envelope]
+
+    @staticmethod
+    async def get_by_id(api: API, pupil: Pupil, id: int, **kwargs) -> "Note":
+        envelope, envelope_type = await api.get(
+            entity="note",
+            rest_url=pupil.unit.rest_url,
+            filter_list_type=FilterListType.BY_ID,
+            pupil_id=pupil.id,
+            id=id,
+            **kwargs
+        )
+        if envelope_type != "NotePayload":
+            raise InvalidResponseEnvelopeTypeException()
+        return Note.parse_obj(envelope)

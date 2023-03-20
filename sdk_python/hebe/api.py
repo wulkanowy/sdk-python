@@ -26,10 +26,12 @@ from sdk_python.hebe.error import (
 
 class FilterListType(Enum):
     BY_PUPIL = "byPupil"
+    BY_ID = "byId"
 
 
 class GETParams(BaseModel):
     mode: Optional[int] = Field(alias="mode")
+    id: Optional[int] = Field(alias="id")
     pupil_id: Optional[int] = Field(alias="pupilId")
     period_id: Optional[int] = Field(alias="periodId")
     constituent_unit_id: Optional[int] = Field(alias="constituentId")

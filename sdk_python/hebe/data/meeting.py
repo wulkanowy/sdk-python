@@ -36,3 +36,19 @@ class Meeting(BaseModel):
         if envelope_type != "IEnumerable`1":
             raise InvalidResponseEnvelopeTypeException()
         return [Meeting.parse_obj(meeting) for meeting in envelope]
+
+    @staticmethod
+    async def get_by_id(
+        api: API, pupil: Pupil, id: int, **kwargs
+    ) -> "Meeting":
+        envelope, envelope_type = await api.get(
+            entity="meetings",
+            filter_list_type=FilterListType.BY_ID,
+            rest_url=pupil.unit.rest_url,
+            pupil_id=pupil.id,
+            id=id,
+            **kwargs
+        )
+        if envelope_type != "MeetingPayload":
+            raise InvalidResponseEnvelopeTypeException()
+        return Meeting.parse_obj(envelope)
