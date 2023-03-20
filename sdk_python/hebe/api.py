@@ -94,7 +94,7 @@ class API:
         filter_list_type: FilterListType = None,
         **kwargs,
     ) -> tuple[Any, str]:
-        url: str = f"{rest_url}/mobile/{entity}{'/deleted' if deleted else ''}{f'{filter_list_type.value}' if filter_list_type else ''}"
+        url: str = f"{rest_url}/mobile/{entity}{'/deleted' if deleted else ''}{f'/{filter_list_type.value}' if filter_list_type else ''}"
         params: dict[str, Union[int, str]] = json.loads(
             GETParams(**kwargs).json(by_alias=True, exclude_none=True)
         )
