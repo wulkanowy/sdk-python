@@ -39,7 +39,7 @@ class Meeting(BaseModel):
 
     @staticmethod
     async def get_by_id(
-        api: API, pupil: Pupil, id: int, from_: date = None, **kwargs
+        api: API, pupil: Pupil, id: int, **kwargs
     ) -> "Meeting":
         envelope, envelope_type = await api.get(
             entity="meetings",
@@ -47,7 +47,6 @@ class Meeting(BaseModel):
             rest_url=pupil.unit.rest_url,
             pupil_id=pupil.id,
             id=id,
-            from_=from_ if from_ else pupil.periods[0].start.date(),
             **kwargs
         )
         if envelope_type != "MeetingPayload":
