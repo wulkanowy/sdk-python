@@ -8,8 +8,3 @@ class Subject(BaseModel):
     position: int = Field(alias="Position")
     code: str = Field(alias="Kod")
     name: str = Field(alias="Name")
-
-    @root_validator(pre=True)
-    def root_validator(cls, values):
-        values["Key"] = UUID(values["Key"])
-        return values

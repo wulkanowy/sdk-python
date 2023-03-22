@@ -38,11 +38,6 @@ class GradeColumn(BaseModel):
     category: Optional[GradeColumnCategory] = Field(alias="Category")
     period_id: int = Field(alias="PeriodId")
 
-    @root_validator(pre=True)
-    def root_validator(cls, values):
-        values["Key"] = UUID(values["Key"])
-        return values
-
 
 class Grade(BaseModel):
     id: int = Field(alias="Id")
@@ -62,7 +57,6 @@ class Grade(BaseModel):
 
     @root_validator(pre=True)
     def root_validator(cls, values):
-        values["Key"] = UUID(values["Key"])
         values["DateCreated"] = datetime.fromtimestamp(
             values["DateCreated"]["Timestamp"] / 1000
         )
