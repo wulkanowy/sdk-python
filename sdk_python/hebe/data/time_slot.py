@@ -23,8 +23,6 @@ class TimeSlot(BaseModel):
         envelope, envelope_type = await api.get(
             entity="dictionary/timeslot",
             rest_url=pupil.unit.rest_url,
-            unit_id=pupil.unit.id,
-            pupil_id=pupil.id,
             **kwargs
         )
         if envelope_type != "IEnumerable`1":
