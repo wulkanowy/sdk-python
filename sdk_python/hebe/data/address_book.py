@@ -1,9 +1,9 @@
+from typing import Optional
 from pydantic import BaseModel, Field
 from enum import Enum
 from uuid import UUID
 
 from sdk_python.hebe.api import API
-from sdk_python.hebe.data.pupil import Pupil
 from sdk_python.hebe.error import InvalidResponseEnvelopeTypeException
 
 
@@ -15,11 +15,11 @@ class AddressBookEntryGroup(Enum):
 
 class AddressBookEntry(BaseModel):
     global_key: UUID = Field(alias="GlobalKey")
-    group: AddressBookEntryGroup = Field(alias="Group")
+    group: Optional[AddressBookEntryGroup] = Field(alias="Group")
     name: str = Field(alias="Name")
 
     @staticmethod
-    async def get(api: API, pupil: Pupil, **kwargs) -> list["AddressBookEntry"]:
+    async def get(api: API, pupil, **kwargs) -> list["AddressBookEntry"]:
         envelope, envelope_type = await api.get(
             entity="messagebox/addressbook",
             rest_url=pupil.unit.rest_url,

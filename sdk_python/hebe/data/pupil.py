@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field, root_validator
 from enum import Enum
 
 from sdk_python.hebe.api import API
+from sdk_python.hebe.data.address_book import AddressBookEntry
 from sdk_python.hebe.error import InvalidResponseEnvelopeTypeException
 
 
@@ -115,6 +116,7 @@ class Pupil(BaseModel):
     periods: list[Period] = Field(alias="Periods")
     pupil_login: PupilLogin = Field(alias="Pupil")
     message_box: MessageBox = Field(alias="MessageBox")
+    educators: list[AddressBookEntry] = Field(alias="EducatorsList")
     context: str = Field(alias="Context")
 
     @root_validator(pre=True)
