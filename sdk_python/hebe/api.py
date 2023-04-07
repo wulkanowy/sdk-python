@@ -40,6 +40,8 @@ class GETParams(BaseModel):
     last_item_id: Optional[int] = Field(alias="lastId")
     page_size: Optional[int] = Field(alias="pageSize")
     from_: Optional[date] = Field(alias="from")
+    date_from: Optional[date] = Field(alias="dateFrom")
+    date_to: Optional[date] = Field(alias="dateTo")
 
     class Config:
         allow_population_by_field_name = True
