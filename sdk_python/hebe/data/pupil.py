@@ -23,6 +23,7 @@ class Scope(Enum):
     PLANNED_LESSONS = "PLANNED_VISIBLE"
     GRADES_AVG = "AVG_ENABLED"
     JUSTIFICATIONS = "JUSTIFICATIONS_ENABLED"
+    POINTS = "POINTS_ENABLED"
 
 
 class Unit(BaseModel):
@@ -32,7 +33,7 @@ class Unit(BaseModel):
     group: str = Field(alias="Group")
     name: str = Field(alias="Name")
     full_name: str = Field(alias="DisplayName")
-    patron: str = Field(alias="Patron")
+    patron: Optional[str] = Field(alias="Patron")
     address: str = Field(alias="Address")
     rest_url: str = Field(alias="RestURL")
     school_topic: str = Field(alias="SchoolTopic")
@@ -42,7 +43,7 @@ class ConstituentUnit(BaseModel):
     id: int = Field(alias="Id")
     short: str = Field(alias="Short")
     name: str = Field(alias="Name")
-    patron: str = Field(alias="Patron")
+    patron: Optional[str] = Field(alias="Patron")
     address: str = Field(alias="Address")
     school_topic: str = Field(alias="SchoolTopic")
 
