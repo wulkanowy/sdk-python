@@ -27,6 +27,7 @@ from sdk_python.hebe.error import (
 class FilterListType(Enum):
     BY_PUPIL = "byPupil"
     BY_ID = "byId"
+    BY_BOX = "byBox"
 
 
 class GETParams(BaseModel):
@@ -37,9 +38,11 @@ class GETParams(BaseModel):
     constituent_unit_id: Optional[int] = Field(alias="constituentId")
     day: Optional[date] = Field(alias="day")
     last_sync_date: Optional[datetime] = Field(alias="lastSyncDate")
-    last_item_id: Optional[int] = Field(alias="lastId")
+    last_item_id: Optional[Union[int, str]] = Field(alias="lastId")
     page_size: Optional[int] = Field(alias="pageSize")
     from_: Optional[date] = Field(alias="from")
+    box_global_key: Optional[str] = Field(alias="box")
+    folder: Optional[int] = Field(alias="folder")
 
     class Config:
         allow_population_by_field_name = True

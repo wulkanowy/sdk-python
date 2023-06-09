@@ -35,7 +35,6 @@ class Note(BaseModel):
 
     @root_validator(pre=True)
     def root_validator(cls, values):
-        values["Key"] = UUID(values["Key"])
         values["DateValid"] = datetime.fromtimestamp(
             values["DateValid"]["Timestamp"] / 1000
         )
