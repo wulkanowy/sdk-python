@@ -1,4 +1,6 @@
+asyncio
 bs4
 beautifulsoup4
 aiohttp
 uonet-fslogin
+pydantic

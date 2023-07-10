@@ -2,7 +2,6 @@ from datetime import time
 from pydantic import BaseModel, Field, root_validator
 
 from sdk_python.hebe.api import API
-from sdk_python.hebe.data.pupil import Pupil
 from sdk_python.hebe.error import InvalidResponseEnvelopeTypeException
 
 
@@ -19,12 +18,8 @@ class TimeSlot(BaseModel):
         return values
 
     @staticmethod
-    async def get(api: API, pupil: Pupil, **kwargs) -> list["TimeSlot"]:
-        envelope, envelope_type = await api.get(
-            entity="dictionary/timeslot",
-            rest_url=pupil.unit.rest_url,
-            **kwargs
-        )
+    async def get(api: API) -> list["TimeSlot"]:
+        envelope, envelope_type = await api.get("dictionary/timeslot")
         if envelope_type != "IEnumerable`1":
             raise InvalidResponseEnvelopeTypeException()
-        return [TimeSlot.parse_obj(time_slot) for time_slot in envelope]
+        return list(map(TimeSlot.parse_obj, envelope))

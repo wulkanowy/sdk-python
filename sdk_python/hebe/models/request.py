@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Any
+from typing import Any, Optional
 import uuid
 from datetime import datetime, timezone
 from uonet_request_signer_hebe import get_signature_values
@@ -15,19 +15,19 @@ class RequestPayload(BaseModel):
     application_version: str = Field(default=APPLICATION_VERSION, alias="AppVersion")
     envelope: Any = Field(alias="Envelope")
     api: int = Field(default=API_VERSION, alias="API")
-    request_id: str = Field(alias="RequestId")
+    request_id: str = Field(alias="RequestId", default=str(uuid.uuid4()))
     timestamp: str = Field(alias="Timestamp")
     timestamp_formatted: str = Field(alias="TimestampFormatted")
+    firebase_token: Optional[str] = Field(alias="FirebaseToken")
 
     @staticmethod
-    def get(envelope: Any):
+    def build(envelope: Any, firebase_token: str = None) -> "RequestPayload":
+        now: datetime = datetime.utcnow()
         return RequestPayload(
             envelope=envelope,
-            request_id=str(uuid.uuid4()),
-            timestamp=int(datetime.now(timezone.utc).timestamp()),
-            timestamp_formatted=datetime.now(timezone.utc).strftime(
-                "%Y-%m-%d %H:%M:%S"
-            ),
+            timestamp=int(now.timestamp()),
+            timestamp_formatted=now.strftime("%Y-%m-%d %H:%M:%S"),
+            firebase_token=firebase_token,
         )
 
     class Config:
@@ -42,11 +42,11 @@ class RequestHeaders(BaseModel):
     date: str = Field(alias="vDate")
     canonical_url: str = Field(alias="vCanonicalUrl")
     signature: str = Field(alias="Signature")
-    digest: str = Field(alias="Digest")
-    content_type: str = Field(alias="Content-Type")
+    digest: Optional[str] = Field(alias="Digest")
+    content_type: Optional[str] = Field(alias="ContentType")
 
     @staticmethod
-    def get(certificate, url: str, payload: Any = None):
+    def build(certificate, url: str, payload: Any = None):
         now: datetime = datetime.now(timezone.utc)
         digest, canonical_url, signature = get_signature_values(
             certificate.fingerprint, certificate.private_key, payload, url, now
@@ -57,8 +57,8 @@ class RequestHeaders(BaseModel):
             date=now.strftime("%a, %d %b %Y %H:%M:%S GMT"),
             canonical_url=canonical_url,
             signature=signature,
-            digest=digest if digest else "",
-            content_type="application/json" if digest else "",
+            digest=digest,
+            content_type="application/json" if digest else None
         )
 
     class Config:
