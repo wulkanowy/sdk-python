@@ -39,7 +39,6 @@ class API:
         headers: RequestHeaders = RequestHeaders.build(
             self._certificate, url, json.dumps(kwargs.get("json")) if kwargs.get("json") else None
         )
-        print(headers.dict(by_alias=True, exclude_none=True), kwargs.get("json"))
         try:
             response = await self._session.request(
                 method,
@@ -49,7 +48,6 @@ class API:
             )
         except:
             raise FailedRequestException()
-        print(response.history)
         if response.status == 404:
             raise NotFoundEndpointException()
         if response.status == 405:
@@ -60,7 +58,6 @@ class API:
             response = Response.parse_raw(await response.text())
         except:
             raise InvalidResponseContentException()
-        print(response)
         self._check_response_status_code(response.status.code)
         return response.envelope, response.envelope_type
 
@@ -79,7 +76,6 @@ class API:
         data: list[Any] = []
         params["pageSize"]: int = PAGE_SIZE
         while True:
-            print(endpoint, params)
             envelope, envelope_type = await self.get(endpoint, params=params, **kwargs)
             if envelope_type != "IEnumerable`1":
                 raise InvalidResponseEnvelopeTypeException()
