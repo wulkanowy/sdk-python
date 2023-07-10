@@ -1,12 +1,15 @@
+import json
 from uuid import UUID
 from pydantic import BaseModel, Field, root_validator
 from datetime import datetime
 from typing import Optional
 from enum import Enum
 
-from sdk_python.hebe.api import API, FilterListType
-from sdk_python.hebe.data.pupil import Pupil
-from sdk_python.hebe.error import InvalidResponseEnvelopeTypeException
+from sdk_python.hebe.api import API
+from sdk_python.hebe.error import (
+    InvalidResponseEnvelopeTypeException,
+    NotFoundEntityException,
+)
 from sdk_python.hebe.models.employee import Employee
 
 
@@ -45,28 +48,34 @@ class Note(BaseModel):
         return values
 
     @staticmethod
-    async def get_by_pupil(api: API, pupil: Pupil, **kwargs) -> list["Note"]:
-        envelope, envelope_type = await api.get(
-            entity="note",
-            rest_url=pupil.unit.rest_url,
-            filter_list_type=FilterListType.BY_PUPIL,
-            pupil_id=pupil.id,
-            **kwargs
+    async def get_by_pupil(
+        api: API, pupil_id: int, last_sync_date: datetime = datetime.min
+    ) -> list["Note"]:
+        envelope = await api.get_all(
+            "note/byPupil",
+            params={"pupilId": pupil_id, "lastSyncDate": last_sync_date.isoformat()},
         )
-        if envelope_type != "IEnumerable`1":
-            raise InvalidResponseEnvelopeTypeException()
-        return [Note.parse_obj(note) for note in envelope]
+        return list(map(Note.parse_obj, envelope))
 
     @staticmethod
-    async def get_by_id(api: API, pupil: Pupil, id: int, **kwargs) -> "Note":
+    async def get_by_pupil_and_id(api: API, pupil_id: int, note_id: int) -> "Note":
         envelope, envelope_type = await api.get(
-            entity="note",
-            rest_url=pupil.unit.rest_url,
-            filter_list_type=FilterListType.BY_ID,
-            pupil_id=pupil.id,
-            id=id,
-            **kwargs
+            "note/byId", params={"pupilId": pupil_id, "id": note_id}
         )
         if envelope_type != "NotePayload":
             raise InvalidResponseEnvelopeTypeException()
+        if not envelope:
+            raise NotFoundEntityException()
         return Note.parse_obj(envelope)
+
+    @staticmethod
+    async def get_deleted_by_pupil(
+        api: API, pupil_id: int, last_sync_date: datetime = datetime.min
+    ) -> list[int]:
+        envelope, envelope_type = await api.get(
+            "note/deleted/byPupil",
+            params={"pupilId": pupil_id, "lastSyncDate": last_sync_date.isoformat()},
+        )
+        if envelope_type != "NotePayload":
+            raise InvalidResponseEnvelopeTypeException()
+        return envelope

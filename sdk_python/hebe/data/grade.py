@@ -4,9 +4,11 @@ from typing import Optional
 from enum import Enum
 from uuid import UUID
 
-from sdk_python.hebe.api import API, FilterListType
-from sdk_python.hebe.data.pupil import Period, Pupil
-from sdk_python.hebe.error import InvalidResponseEnvelopeTypeException
+from sdk_python.hebe.api import API
+from sdk_python.hebe.error import (
+    InvalidResponseEnvelopeTypeException,
+    NotFoundEntityException,
+)
 from sdk_python.hebe.models.employee import Employee
 from sdk_python.hebe.models.subject import Subject
 
@@ -72,37 +74,64 @@ class Grade(BaseModel):
         return values
 
     @staticmethod
-    async def get_by_pupil(
-        api: API, pupil: Pupil, period: Period, behaviour: bool = False, **kwargs
+    async def get_by_pupil_and_period(
+        api: API,
+        pupil_id: int,
+        period_id: int,
+        behaviour: bool = False,
+        last_sync_date: datetime = datetime.min,
     ) -> list["Grade"]:
-        envelope, envelope_type = await api.get(
-            entity=f'grade{"/behaviour" if behaviour else ""}',
-            rest_url=pupil.unit.rest_url,
-            filter_list_type=FilterListType.BY_PUPIL,
-            pupil_id=pupil.id,
-            period_id=period.id,
-            **kwargs
+        envelope = await api.get_all(
+            f'grade/{"behaviour" if behaviour else ""}/byPupil',
+            {
+                "pupilId": pupil_id,
+                "periodId": period_id,
+                "lastSyncDate": last_sync_date.isoformat(),
+            },
         )
-        if envelope_type != "IEnumerable`1":
-            raise InvalidResponseEnvelopeTypeException()
-        return [Grade.parse_obj(grade) for grade in envelope]
+        return list(map(Grade.parse_obj, envelope))
 
     @staticmethod
-    async def get_by_id(
-        api: API, pupil: Pupil, period: Period, id: int, **kwargs
+    async def get_by_pupil_period_and_id(
+        api: API, pupil_id: int, period_id: int, grade_id: int
     ) -> "Grade":
         envelope, envelope_type = await api.get(
-            entity="grade",
-            rest_url=pupil.unit.rest_url,
-            filter_list_type=FilterListType.BY_ID,
-            pupil_id=pupil.id,
-            period_id=period.id,
-            id=id,
-            **kwargs
+            "grade/ById",
+            params={"pupilId": pupil_id, "periodId": period_id, "id": grade_id},
         )
         if envelope_type != "GradePayload":
             raise InvalidResponseEnvelopeTypeException()
+        if not envelope:
+            raise NotFoundEntityException()
         return Grade.parse_obj(envelope)
+
+    @staticmethod
+    async def get_deleted_by_pupil_and_period(
+        api: API, pupil_id: int, period_id: int, last_sync_date: datetime = datetime.min
+    ) -> list[int]:
+        envelope, envelope_type = await api.get(
+            "grade/deleted/byPupil",
+            params={
+                "pupilId": pupil_id,
+                "periodId": period_id,
+                "lastSyncDate": last_sync_date.isoformat(),
+            },
+        )
+        if envelope_type != "IEnumerable`1":
+            raise InvalidResponseEnvelopeTypeException()
+        return envelope
+
+    @staticmethod
+    async def get_deleted(
+        api: API, last_sync_date: datetime = datetime.min
+    ) -> list[int]:
+        envelope, envelope_type = await api.get(
+            "grade/deleted",
+            params={"lastSyncDate": last_sync_date.isoformat()},
+        )
+        if envelope_type != "IEnumerable`1":
+            raise InvalidResponseEnvelopeTypeException()
+        return envelope
 
 
 class GradesSummary(BaseModel):
@@ -126,17 +155,15 @@ class GradesSummary(BaseModel):
         return values
 
     @staticmethod
-    async def get_by_pupil(
-        api: API, pupil: Pupil, period: Period, **kwargs
+    async def get_by_pupil_and_period(
+        api: API, pupil_id: int, period_id: int, last_sync_date: datetime = datetime.min
     ) -> list["GradesSummary"]:
-        envelope, envelope_type = await api.get(
-            entity="grade/summary",
-            rest_url=pupil.unit.rest_url,
-            filter_list_type=FilterListType.BY_PUPIL,
-            pupil_id=pupil.id,
-            period_id=period.id,
-            **kwargs
+        envelope = await api.get_all(
+            "grade/summary/byPupil",
+            {
+                "pupilId": pupil_id,
+                "periodId": period_id,
+                "lastSyncDate": last_sync_date.isoformat(),
+            },
         )
-        if envelope_type != "IEnumerable`1":
-            raise InvalidResponseEnvelopeTypeException()
-        return [GradesSummary.parse_obj(grades_summary) for grades_summary in envelope]
+        return list(map(GradesSummary.parse_obj, envelope))

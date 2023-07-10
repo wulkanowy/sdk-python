@@ -2,9 +2,11 @@ from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, Field, root_validator
 
-from sdk_python.hebe.api import API, FilterListType
-from sdk_python.hebe.data.pupil import Period, Pupil
-from sdk_python.hebe.error import InvalidResponseEnvelopeTypeException
+from sdk_python.hebe.api import API
+from sdk_python.hebe.error import (
+    InvalidResponseEnvelopeTypeException,
+    NotFoundEntityException,
+)
 
 
 class Meeting(BaseModel):
@@ -23,32 +25,42 @@ class Meeting(BaseModel):
 
     @staticmethod
     async def get_by_pupil(
-        api: API, pupil: Pupil, from_: date = None, **kwargs
+        api: API,
+        pupil_id: int,
+        from_date: date = datetime.now(),
+        last_sync_date: datetime = datetime.min,
     ) -> list["Meeting"]:
-        envelope, envelope_type = await api.get(
-            entity="meetings",
-            filter_list_type=FilterListType.BY_PUPIL,
-            rest_url=pupil.unit.rest_url,
-            pupil_id=pupil.id,
-            from_=from_ if from_ else pupil.periods[0].start.date(),
-            **kwargs
+        envelope = await api.get_all(
+            "meetings/byPupil",
+            {
+                "pupilId": pupil_id,
+                "from": from_date.isoformat(),
+                "lastSyncDate": last_sync_date.isoformat(),
+            },
         )
-        if envelope_type != "IEnumerable`1":
-            raise InvalidResponseEnvelopeTypeException()
-        return [Meeting.parse_obj(meeting) for meeting in envelope]
+        return list(map(Meeting.parse_obj, envelope))
 
     @staticmethod
-    async def get_by_id(
-        api: API, pupil: Pupil, id: int, **kwargs
+    async def get_by_pupil_and_id(
+        api: API, pupil_id: int, meeting_id: int
     ) -> "Meeting":
         envelope, envelope_type = await api.get(
-            entity="meetings",
-            filter_list_type=FilterListType.BY_ID,
-            rest_url=pupil.unit.rest_url,
-            pupil_id=pupil.id,
-            id=id,
-            **kwargs
+            "meetings/byId", params={"pupilId": pupil_id, "id": meeting_id}
         )
         if envelope_type != "MeetingPayload":
             raise InvalidResponseEnvelopeTypeException()
+        if not envelope:
+            raise NotFoundEntityException()
         return Meeting.parse_obj(envelope)
+
+    @staticmethod
+    async def get_deleted_by_pupil(
+        api: API, pupil_id: int, last_sync_date: datetime = datetime.min
+    ) -> list[int]:
+        envelope, envelope_type = await api.get(
+            "meetings/deleted/byPupil",
+            params={"pupilId": pupil_id, "lastSyncDate": last_sync_date.isoformat()},
+        )
+        if envelope_type != "IEnumerable`1":
+            raise InvalidResponseEnvelopeTypeException()
+        return envelope

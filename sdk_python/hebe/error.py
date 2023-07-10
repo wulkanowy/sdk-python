@@ -14,6 +14,10 @@ class NotFoundEndpointException(SDKException):
     pass
 
 
+class MethodNotAllowedException(SDKException):
+    pass
+
+
 class FailedRequestException(SDKException):
     pass
 
@@ -22,7 +26,11 @@ class InvalidResponseEnvelopeTypeException(SDKException):
     pass
 
 
-class InvalidSignatureValuesException(SDKException):
+class NoUnitSymbolException(SDKException):
+    pass
+
+
+class NoPermissionsException(SDKException):
     pass
 
 
@@ -38,7 +46,7 @@ class UnauthorizedCertificateException(SDKException):
     pass
 
 
-class InvalidTokenException(SDKException):
+class NotFoundEntityException(SDKException):
     pass
 
 
