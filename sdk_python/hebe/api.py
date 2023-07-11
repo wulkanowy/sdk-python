@@ -37,7 +37,9 @@ class API:
     ) -> tuple[Any, str]:
         url: str = f"{self._rest_url}/mobile/{endpoint}"
         headers: RequestHeaders = RequestHeaders.build(
-            self._certificate, url, json.dumps(kwargs.get("json")) if kwargs.get("json") else None
+            self._certificate,
+            url,
+            json.dumps(kwargs.get("json")) if kwargs.get("json") else None,
         )
         try:
             response = await self._session.request(
@@ -66,7 +68,10 @@ class API:
             envelope, self._certificate.firebase_token
         )
         return await self.send_request(
-            "POST", endpoint, json=payload.dict(by_alias=True, exclude_none=True), **kwargs
+            "POST",
+            endpoint,
+            json=payload.dict(by_alias=True, exclude_none=True),
+            **kwargs,
         )
 
     async def get(self, endpoint: str, **kwargs) -> tuple[Any, str]:

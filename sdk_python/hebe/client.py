@@ -4,6 +4,7 @@ from sdk_python.hebe import Certificate
 from sdk_python.hebe.api import API
 from sdk_python.hebe.data.exam import Exam
 from sdk_python.hebe.data.grade import Grade, GradesSummary
+from sdk_python.hebe.data.homework import Homework
 from sdk_python.hebe.data.lucky_number import LuckyNumber
 from sdk_python.hebe.data.meeting import Meeting
 from sdk_python.hebe.data.note import Note
@@ -101,3 +102,12 @@ class Client:
 
     async def get_deleted_exams_by_pupil(self, pupil_id: int, **kwargs) -> list[int]:
         return await Exam.get_deleted_by_pupil(self._api, pupil_id, **kwargs)
+
+    async def get_homework_by_pupil(self, pupil_id: int, **kwargs) -> list[Homework]:
+        return await Homework.get_by_pupil(self._api, pupil_id, **kwargs)
+
+    async def get_deleted_homework(self, **kwargs) -> list[int]:
+        return await Homework.get_deleted(self._api, **kwargs)
+
+    async def get_deleted_homework_by_pupil(self, pupil_id: int, **kwargs) -> list[int]:
+        return await Homework.get_deleted_by_pupil(self._api, pupil_id, **kwargs)

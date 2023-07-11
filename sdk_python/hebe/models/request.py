@@ -58,7 +58,7 @@ class RequestHeaders(BaseModel):
             canonical_url=canonical_url,
             signature=signature,
             digest=digest,
-            content_type="application/json" if digest else None
+            content_type="application/json" if digest else None,
         )
 
     class Config:
