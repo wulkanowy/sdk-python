@@ -9,6 +9,7 @@ from sdk_python.hebe.data.lucky_number import LuckyNumber
 from sdk_python.hebe.data.meeting import Meeting
 from sdk_python.hebe.data.note import Note
 from sdk_python.hebe.data.pupil import PupilInfo, Pupil
+from sdk_python.hebe.data.schedule import ScheduleEntry, ScheduleChange
 from sdk_python.hebe.data.time_slot import TimeSlot
 
 
@@ -111,3 +112,21 @@ class Client:
 
     async def get_deleted_homework_by_pupil(self, pupil_id: int, **kwargs) -> list[int]:
         return await Homework.get_deleted_by_pupil(self._api, pupil_id, **kwargs)
+
+    async def get_schedule_by_pupil(
+        self, pupil_id: int, **kwargs
+    ) -> list[ScheduleEntry]:
+        return await ScheduleEntry.get_by_pupil(self._api, pupil_id, **kwargs)
+
+    async def get_deleted_schedule_entries_by_pupil(
+        self, pupil_id: int, **kwargs
+    ) -> list[int]:
+        return await ScheduleEntry.get_deleted_by_pupil(self._api, pupil_id, **kwargs)
+
+    async def get_schedule_changes_by_pupil(
+        self, pupil_id: int, **kwargs
+    ) -> list[ScheduleChange]:
+        return await ScheduleChange.get_by_pupil(self._api, pupil_id, **kwargs)
+
+    async def get_deleted_schedule_changes(self, **kwargs) -> list[int]:
+        return await ScheduleChange.get_deleted(self._api, **kwargs)
