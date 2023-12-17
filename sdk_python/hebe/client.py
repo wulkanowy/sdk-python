@@ -2,6 +2,7 @@ from datetime import date
 
 from sdk_python.hebe import Certificate
 from sdk_python.hebe.api import API
+from sdk_python.hebe.data.teacher import Teacher
 from sdk_python.hebe.data.exam import Exam
 from sdk_python.hebe.data.grade import Grade, GradesSummary
 from sdk_python.hebe.data.homework import Homework
@@ -130,3 +131,10 @@ class Client:
 
     async def get_deleted_schedule_changes(self, **kwargs) -> list[int]:
         return await ScheduleChange.get_deleted(self._api, **kwargs)
+
+    async def get_teachers_by_pupil_and_period(
+        self, pupil_id: int, period_id: int, **kwargs
+    ) -> list[Teacher]:
+        return await Teacher.get_by_pupil_and_period(
+            self._api, pupil_id, period_id, **kwargs
+        )
