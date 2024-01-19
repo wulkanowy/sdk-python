@@ -1,1 +1,1 @@
-# Nieoficjalne SDK dla Vulcan UONET+
+# Nieoficjalne SDK dla Dziennik Vulcan
