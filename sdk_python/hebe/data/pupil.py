@@ -96,7 +96,7 @@ class Journal(BaseModel):
     id: int = Field(alias="Id")
     year_start: datetime = Field(alias="YearStart")
     year_end: datetime = Field(alias="YearEnd")
-    pupil_number: int = Field(alias="PupilNumber")
+    pupil_number: Optional[int] = Field(alias="PupilNumber")
 
     @root_validator(pre=True)
     def root_validator(cls, values):
